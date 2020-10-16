@@ -9,10 +9,11 @@
 
 import * as utils from './utils.js';
 
-let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData;
+let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, rectArray;
 
 
 function setupCanvas(canvasElement, analyserNodeRef) {
+	rectArray = [];
 	// create drawing context
 	ctx = canvasElement.getContext("2d");
 	canvasWidth = canvasElement.width;
@@ -72,11 +73,9 @@ function draw(params = {}) {
 	// 4.5 - draw squares
 	if (params.showSquares) {
 		if ((audioData[audioData.length - 1]) == 20) {
-			for (let i = canvasWidth; i > 0; i--) {
-				ctx.save();
-				utils.drawRectangle(ctx, i, canvasHeight / 2, 20, 50);
-				ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-				ctx.restore();
+			if (rectArray.length < 100) {
+				let aRect = { x: canvasWidth, y: canvasHeight / 2, width: 20, height: 50 };
+				rectArray.push(aRect);
 			}
 		}
     }
@@ -166,7 +165,13 @@ function draw(params = {}) {
 	// D) copy image data back to canvas
 	ctx.putImageData(imageData, 0, 0);
 
-	
+	for (let rect of rectArray) {
+		rect.x -= 3;
+		utils.drawRectangle(ctx, rect.x, rect.y, rect.width, rect.height);
+		if (rect.x <= 0) {
+			rectArray.shift();
+        }
+    }
 }
 
 export { setupCanvas, draw };
