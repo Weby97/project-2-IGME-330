@@ -16,6 +16,7 @@ const drawParams = {
 	showCircles: true,
 	showNoise: false,
 	showInvert: false,
+	showSquares: true,
 	showEmboss: false
 };
 
@@ -110,6 +111,15 @@ function setupUI(canvasElement) {
 	// II. change the value of `drawParams.showBars` every time the bars checkbox changes state
 	document.querySelector('#barsCB').onchange = e => {
 		drawParams.showBars = e.target.checked;
+	};
+
+	// ----- Squares -----
+	// I. set the initial state of the squares checkbox
+	document.querySelector('#squaresCB').checked = drawParams.showSquares;
+
+	// II. change the value of `drawParams.showSquares` every time the bars checkbox changes state
+	document.querySelector('#squaresCB').onchange = e => {
+		drawParams.showSquares = e.target.checked;
 	};
 
 	// ----- CIRCLES -----

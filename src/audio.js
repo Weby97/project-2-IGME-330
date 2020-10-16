@@ -8,7 +8,7 @@ let element, sourceNode, analyserNode, gainNode;
 // 3 - here we are faking an enumeration
 const DEFAULTS = Object.freeze({
     gain: .5,
-    numSamples: 256
+    numSamples: 32
 });
 
 // 4 - create a new array of 8-bit integers (0-255)

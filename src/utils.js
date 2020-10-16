@@ -38,4 +38,19 @@ const goFullscreen = (element) => {
 	// .. and do nothing if the method is not supported
 };
 
-export { makeColor, getRandomColor, getLinearGradient, goFullscreen };
+const drawRectangle = (ctx, x, y, width, height, fillStyle = "black", lineWidth = 0, strokeStyle = "black") => {
+	ctx.save();
+	ctx.fillStyle = fillStyle;
+	ctx.beginPath();
+	ctx.rect(x, y, width, height);
+	ctx.closePath();
+	ctx.fill();
+	if (lineWidth > 0) {
+		ctx.lineWidth = lineWidth;
+		ctx.strokeStyle = strokeStyle;
+		ctx.stroke();
+	}
+	ctx.restore();
+};
+
+export { makeColor, getRandomColor, getLinearGradient, goFullscreen, drawRectangle };

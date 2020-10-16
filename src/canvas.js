@@ -65,8 +65,22 @@ function draw(params = {}) {
 			ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256 - audioData[i], barWidth, barHeight);
 			ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256 - audioData[i], barWidth, barHeight);
 		}
+
 		ctx.restore();
+	}
+
+	// 4.5 - draw squares
+	if (params.showSquares) {
+		if ((audioData[audioData.length - 1]) == 20) {
+			for (let i = canvasWidth; i > 0; i--) {
+				ctx.save();
+				utils.drawRectangle(ctx, i, canvasHeight / 2, 20, 50);
+				ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+				ctx.restore();
+			}
+		}
     }
+
 	// 5 - draw circles
 	if (params.showCircles) {
 		let maxRadius = canvasHeight / 4;
