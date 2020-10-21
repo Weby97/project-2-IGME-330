@@ -8,28 +8,69 @@
 */
 
 import * as utils from './utils.js';
+import * as classes from './classes.js';
 
-let ctx, canvasWidth, canvasHeight, gradient, analyserNode, audioData, rectArray;
+let ctx, canvasWidth, canvasHeight, gradient, analyserNode, sAnalyserNode, audioData, sAudioData, rectArray, videoElement;
 
 
-function setupCanvas(canvasElement, analyserNodeRef) {
+function setupCanvas(canvasElement, analyserNodeRef, silentAnalyserNodeRef) {
 	rectArray = [];
 	// create drawing context
 	ctx = canvasElement.getContext("2d");
 	canvasWidth = canvasElement.width;
 	canvasHeight = canvasElement.height;
 	// create a gradient that runs top to bottom
-	gradient = utils.getLinearGradient(ctx, 0, 0, 0, canvasHeight, [{ percent: 0, color: "#ffcdb2" }, { percent: .25, color: "#ffb4a2" }, { percent: .5, color: "#e5989b" }, { percent: .75, color: "#b5838d" }, { percent: 1, color: "#6d6875" }]);
+	gradient = utils.getLinearGradient(ctx, 0, 0, 0, canvasHeight, [{
+		percent: 0,
+		color: "#ffcdb2"
+	}, {
+		percent: .25,
+		color: "#ffb4a2"
+	}, {
+		percent: .5,
+		color: "#e5989b"
+	}, {
+		percent: .75,
+		color: "#b5838d"
+	}, {
+		percent: 1,
+		color: "#6d6875"
+	}]);
 	// keep a reference to the analyser node
 	analyserNode = analyserNodeRef;
+	sAnalyserNode = silentAnalyserNodeRef;
 	// this is the array where the analyser data will be stored
 	audioData = new Uint8Array(analyserNode.fftSize / 2);
+	sAudioData = new Uint8Array(sAnalyserNode.fftSize / 2);
+
+	videoElement = document.querySelector("video");
+
+	if (navigator.getUserMedia) {
+		navigator.getUserMedia({
+			audio: false,
+			video: {
+				width: canvasWidth,
+				height: canvasHeight
+			}
+		},
+			function (stream) {
+				videoElement.srcObject = stream;
+			},
+			function (err) {
+				console.log("The following error occurred: " + err.name);
+			}
+		);
+	} else {
+		console.log("getUserMedia not supported");
+	}
+	drawEffect();
 }
 
 function draw(params = {}) {
 	// 1 - populate the audioData array with the frequency data from the analyserNode
 	// notice these arrays are passed "by reference" 
 	analyserNode.getByteFrequencyData(audioData);
+	sAnalyserNode.getByteFrequencyData(sAudioData);
 	// OR
 	//analyserNode.getByteTimeDomainData(audioData); // waveform data
 
@@ -47,7 +88,7 @@ function draw(params = {}) {
 		ctx.globalAlpha = .3;
 		ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 		ctx.restore();
-    }
+	}
 	// 4 - draw bars
 	if (params.showBars) {
 		let barSpacing = 4;
@@ -65,6 +106,8 @@ function draw(params = {}) {
 		for (let i = 0; i < audioData.length; i++) {
 			ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256 - audioData[i], barWidth, barHeight);
 			ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256 - audioData[i], barWidth, barHeight);
+			ctx.font = "30px Arial"
+			ctx.fillText(audioData[i], margin + i * (barWidth + barSpacing), topSpacing + 256 - audioData[i]);
 		}
 
 		ctx.restore();
@@ -72,13 +115,14 @@ function draw(params = {}) {
 
 	// 4.5 - draw squares
 	if (params.showSquares) {
-		if ((audioData[audioData.length - 1]) == 20) {
+		if ((audioData[audioData.length - 3]) >= 80) {
 			if (rectArray.length < 100) {
-				let aRect = { x: canvasWidth, y: canvasHeight / 2, width: 20, height: 50 };
-				rectArray.push(aRect);
+				let aBox = new classes.SoundBox(canvasWidth, canvasHeight / 2, 40, 50, 3, "orange");
+
+				rectArray.push(aBox);
 			}
 		}
-    }
+	}
 
 	// 5 - draw circles
 	if (params.showCircles) {
@@ -131,7 +175,7 @@ function draw(params = {}) {
 
 	// B) Iterate through each pixel, stepping 4 elements at a time (which is the RGBA for 1 pixel)
 	for (let i = 0; i < length; i += 4) {
-	// C) randomly change every 20th pixel to red
+		// C) randomly change every 20th pixel to red
 		if (params.showNoise && Math.random() < .05) {
 			// data[i] is the red channel
 			// data[i+1] is the green channel
@@ -166,12 +210,24 @@ function draw(params = {}) {
 	ctx.putImageData(imageData, 0, 0);
 
 	for (let rect of rectArray) {
-		rect.x -= 3;
-		utils.drawRectangle(ctx, rect.x, rect.y, rect.width, rect.height);
+		rect.display(ctx);
+		rect.move();
 		if (rect.x <= 0) {
 			rectArray.shift();
-        }
-    }
+		}
+	}
 }
 
-export { setupCanvas, draw };
+function drawEffect() {
+	requestAnimationFrame(drawEffect)
+	ctx.drawImage(videoElement, 0, 0, canvasWidth, canvasHeight);
+	let imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+	let data = imageData.data;
+	let length = imageData.length;
+	let width = imageData.width;
+
+	ctx.putImageData(imageData, 0, 0)
+
+}
+
+export { setupCanvas, draw, drawEffect };

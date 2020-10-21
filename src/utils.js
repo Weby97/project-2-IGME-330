@@ -53,4 +53,4 @@ const drawRectangle = (ctx, x, y, width, height, fillStyle = "black", lineWidth 
 	ctx.restore();
 };
 
-export { makeColor, getRandomColor, getLinearGradient, goFullscreen, drawRectangle };
+export { makeColor, getRandomColor, getLinearGradient, goFullscreen, drawRectangle};

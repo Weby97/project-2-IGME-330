@@ -17,7 +17,9 @@ const drawParams = {
 	showNoise: false,
 	showInvert: false,
 	showSquares: true,
-	showEmboss: false
+	showEmboss: false,
+	highshelf: false,
+	lowshelf: false
 };
 
 // 1 - here we are faking an enumeration
@@ -31,7 +33,7 @@ function init() {
 	audio.setupWebaudio(DEFAULTS.sound1);
 	let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
 	setupUI(canvasElement);
-	canvas.setupCanvas(canvasElement, audio.analyserNode);
+	canvas.setupCanvas(canvasElement, audio.analyserNode, audio.sAnalyserNode);
 	loop();
 }
 
@@ -49,13 +51,21 @@ function setupUI(canvasElement) {
 	// add .onclick event to button
 	playButton.onclick = e => {
 		console.log(`audioCtx.state before = ${audio.audioCtx.state}`);
+		console.log(`sAudioCtx.state before = ${audio.silentAudio.state}`);
 
 		// check if context is in suspended state (autoplay policy)
 		if (audio.audioCtx.state == "suspended") {
 			audio.audioCtx.resume();
 		}
 
+		// check if context is in suspended state (autoplay policy)
+		if (audio.silentAudio.state == "suspended") {
+			audio.silentAudio.resume();
+		}
+
 		console.log(`audioCtx.state after = ${audio.audioCtx.state}`);
+		console.log(`sAudioCtx.state after = ${audio.silentAudio.state}`);
+
 		if (e.target.dataset.playing == "no") {
 			// if track is currently paused, play it
 			audio.playCurrentSound();
@@ -158,6 +168,29 @@ function setupUI(canvasElement) {
 		drawParams.showEmboss = e.target.checked;
 	};
 
+
+	// I. set the initial state of the high shelf checkbox
+	document.querySelector('#highshelfCB').checked = drawParams.highshelf; // `highshelf` is a boolean we will declare in a second
+
+	// II. change the value of `highshelf` every time the high shelf checkbox changes state
+	document.querySelector('#highshelfCB').onchange = e => {
+		drawParams.highshelf = e.target.checked;
+		toggleHighshelf(); // turn on or turn off the filter, depending on the value of `highshelf`!
+	};
+
+	// I. set the initial state of the low shelf checkbox
+	document.querySelector('#lowshelfCB').checked = drawParams.lowshelf; // `lowshelf` is a boolean we will declare in a second
+
+	// II. change the value of `lowshelf` every time the high shelf checkbox changes state
+	document.querySelector('#lowshelfCB').onchange = e => {
+		drawParams.lowshelf = e.target.checked;
+		toggleLowshelf(); // turn on or turn off the filter, depending on the value of `highshelf`!
+	};
+
+	// III. 
+	toggleHighshelf(); // when the app starts up, turn on or turn off the filter, depending on the value of `highshelf`!
+	toggleLowshelf();
+
 } // end setupUI
 
 function loop() {
@@ -192,6 +225,24 @@ function loop() {
 	//console.log(`maxLoudness = ${maxLoudness}`);
 	//console.log(`loudnessAt2K = ${loudnessAt2K}`);
 	//console.log("---------------------");
+}
+
+function toggleHighshelf() {
+	if (drawParams.highshelf) {
+		audio.biquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime); // we created the `biquadFilter` (i.e. "treble") node last time
+		audio.biquadFilter.gain.setValueAtTime(25, audio.audioCtx.currentTime);
+	} else {
+		audio.biquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime);
+	}
+}
+
+function toggleLowshelf() {
+	if (drawParams.lowshelf) {
+		audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
+		audio.lowShelfBiquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
+	} else {
+		audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime);
+	}
 }
 
 export { init };

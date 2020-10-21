@@ -1,9 +1,11 @@
 // 1 - our WebAudio context, **we will export and make this public at the bottom of the file**
 let audioCtx;
+let silentAudio;
 
 // **These are "private" properties - these will NOT be visible outside of this module (i.e. file)**
 // 2 - WebAudio nodes that are part of our WebAudio audio routing graph
-let element, sourceNode, analyserNode, gainNode;
+let element, sourceNode, analyserNode, gainNode, biquadFilter, lowShelfBiquadFilter;
+let sElement, sSourceNode, sAnalyserNode, sGainNode, firstTime;
 
 // 3 - here we are faking an enumeration
 const DEFAULTS = Object.freeze({
@@ -14,25 +16,39 @@ const DEFAULTS = Object.freeze({
 // 4 - create a new array of 8-bit integers (0-255)
 // this is a typed array to hold the audio frequency data
 let audioData = new Uint8Array(DEFAULTS.numSamples / 2);
+let sAudioData = new Uint8Array(DEFAULTS.numSamples / 2);
 
 // **Next are "public" methods - we are going to export all of these at the bottom of this file**
 function setupWebaudio(filePath) {
+    firstTime = true;
+
     // 1 - The || is because WebAudio has not been standardized across browsers yet
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     audioCtx = new AudioContext();
+    silentAudio = new AudioContext();
 
     // 2 - this creates an <audio> element
     element = new Audio();
+    sElement = new Audio();
 
     // 3 - have it point at a sound file
     loadSoundFile(filePath);
 
     // 4 - create an a source node that points at the <audio> element
     sourceNode = audioCtx.createMediaElementSource(element);
+    sSourceNode = silentAudio.createMediaElementSource(sElement);
+
+    // 4.5 - BIQUAD FILTER
+    biquadFilter = audioCtx.createBiquadFilter();
+    biquadFilter.type = "highshelf";
+
+    lowShelfBiquadFilter = audioCtx.createBiquadFilter();
+    lowShelfBiquadFilter.type = "lowshelf";
 
     // 5 - create an analyser node
     // note the UK spelling of "Analyser"
     analyserNode = audioCtx.createAnalyser();
+    sAnalyserNode = silentAudio.createAnalyser();
 
     /*
     // 6
@@ -46,28 +62,48 @@ function setupWebaudio(filePath) {
 
     // fft stands for Fast Fourier Transform
     analyserNode.fftSize = DEFAULTS.numSamples;
+    sAnalyserNode.fftSize = DEFAULTS.numSamples;
 
     // 7 - create a gain (volume) node
     gainNode = audioCtx.createGain();
+    sGainNode = silentAudio.createGain();
     gainNode.gain.value = DEFAULTS.gain;
+    sGainNode.gain.value = 0;
 
     // 8 - connect the nodes - we now have an audio graph
-    sourceNode.connect(analyserNode);
+    sourceNode.connect(biquadFilter);
+    sSourceNode.connect(sAnalyserNode);
+
+    biquadFilter.connect(lowShelfBiquadFilter);
+    lowShelfBiquadFilter.connect(analyserNode);
+
     analyserNode.connect(gainNode);
+    sAnalyserNode.connect(sGainNode);
+
     gainNode.connect(audioCtx.destination);
+    sGainNode.connect(silentAudio.destination);
 }
 
 
 function loadSoundFile(filePath) {
     element.src = filePath;
+    sElement.src = filePath;
 }
 
 function playCurrentSound() {
-    element.play();
+    sElement.play();
+    if (firstTime) {
+        setTimeout(function () { element.play() }, 5000);
+        firstTime = false;
+    }
+    else {
+        element.play();
+    }
 }
 
 function pauseCurrentSound() {
     element.pause();
+    sElement.pause();
 }
 
 function setVolume(value) {
@@ -75,4 +111,4 @@ function setVolume(value) {
     gainNode.gain.value = value;
 }
 
-export { audioCtx, setupWebaudio, playCurrentSound, pauseCurrentSound, loadSoundFile, setVolume, analyserNode };
+export { audioCtx, silentAudio, setupWebaudio, playCurrentSound, pauseCurrentSound, loadSoundFile, setVolume, analyserNode, sAnalyserNode, biquadFilter, lowShelfBiquadFilter };

@@ -7,6 +7,7 @@
     <script src="./src/loader.js" type="module"></script>
 </head>
 <body>
+    <video autoplay></video>
     <main>
         <canvas width="800" height="400"></canvas>
         <div id="controls">
@@ -20,6 +21,7 @@
                         <option value="media/New Adventure Theme.mp3" selected>New Adventure Theme</option>
                         <option value="media/Peanuts Theme.mp3">Peanuts Theme</option>
                         <option value="media/The Picard Song.mp3">The Picard Song</option>
+                        <option value="media/Billie Jean.mp3">Billie Jean</option>
                     </select>
                 </label>
             </section>
@@ -37,6 +39,10 @@
                 <span><input type="checkbox" id="noiseCB"><label for="noiseCB">Show Noise</label></span>
                 <span><input type="checkbox" id="invertCB"><label for="invertCB">Show Invert</label></span>
                 <span><input type="checkbox" id="embossCB"><label for="embossCB">Show Emboss</label></span>
+                <span><input type="checkbox" id="highshelfCB"><label for="highshelfCB">Highshelf Filter (Treble)</label></span>
+                <span><input type="checkbox" id="lowshelfCB"><label for="lowshelfCB">Lowshelf Filter (Bass)</label></span>
+                <span><input type="checkbox" id="distortionCB"><label for="distortionCB">Distortion</label></span>
+                <span><input type="range" min="0" max="100" value="0" id="distortionSlider"></span>
             </section>
         </div>
     </main>
