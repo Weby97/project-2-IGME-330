@@ -45,7 +45,12 @@ button[data-playing="no"]:after {
     width: 8rem;
 }
 
-#distortionSlider {
+#lowshelfSlider {
     position: relative;
     top: .7em;
+}
+
+#lowshelfVal{
+    display:inline-block;
+    padding-right: 10px;
 }

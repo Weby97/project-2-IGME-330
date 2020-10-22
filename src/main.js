@@ -22,6 +22,9 @@ const drawParams = {
 	lowshelf: false
 };
 
+// gainValue is how much of the LOWSHELF we want in. Base is 15.
+let gainValue = 15;
+
 // 1 - here we are faking an enumeration
 const DEFAULTS = Object.freeze({
 	sound1: "media/New Adventure Theme.mp3"
@@ -180,6 +183,7 @@ function setupUI(canvasElement) {
 
 	// I. set the initial state of the low shelf checkbox
 	document.querySelector('#lowshelfCB').checked = drawParams.lowshelf; // `lowshelf` is a boolean we will declare in a second
+	
 
 	// II. change the value of `lowshelf` every time the high shelf checkbox changes state
 	document.querySelector('#lowshelfCB').onchange = e => {
@@ -187,7 +191,15 @@ function setupUI(canvasElement) {
 		toggleLowshelf(); // turn on or turn off the filter, depending on the value of `highshelf`!
 	};
 
+	let lowSlider = document.querySelector('#lowshelfSlider');
+	lowSlider.onchange = e => {
+		gainValue = Math.floor(lowSlider.value);
+		document.querySelector('#lowshelfVal').innerHTML = lowSlider.value;
+		toggleLowshelf(); // turn on or turn off the filter, depending on the value of `highshelf`!
+	};
+
 	// III. 
+	document.querySelector('#lowshelfVal').innerHTML = lowSlider.value;
 	toggleHighshelf(); // when the app starts up, turn on or turn off the filter, depending on the value of `highshelf`!
 	toggleLowshelf();
 
@@ -239,7 +251,7 @@ function toggleHighshelf() {
 function toggleLowshelf() {
 	if (drawParams.lowshelf) {
 		audio.lowShelfBiquadFilter.frequency.setValueAtTime(1000, audio.audioCtx.currentTime);
-		audio.lowShelfBiquadFilter.gain.setValueAtTime(15, audio.audioCtx.currentTime);
+		audio.lowShelfBiquadFilter.gain.setValueAtTime(gainValue, audio.audioCtx.currentTime);
 	} else {
 		audio.lowShelfBiquadFilter.gain.setValueAtTime(0, audio.audioCtx.currentTime);
 	}
