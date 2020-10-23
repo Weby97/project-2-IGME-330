@@ -117,7 +117,8 @@ function draw(params = {}) {
 	if (params.showSquares) {
 		if ((audioData[audioData.length - 3]) >= 80) {
 			if (rectArray.length < 100) {
-				let aBox = new classes.SoundBox(canvasWidth, canvasHeight / 2, 40, 50, 3, "orange");
+				let aBox = new classes.SoundBox(canvasWidth, canvasHeight / 2, 40, 50, 3);
+				//aBox.addEventlistener
 				rectArray.push(aBox)
 			}
 		}
@@ -210,7 +211,7 @@ function draw(params = {}) {
 
 	for (let rect of rectArray) {
 		rect.display(ctx);
-		rect.move();
+		setInterval(rect.move(),600);
 		if (rect.x <= 0) {
 			rectArray.shift();
 		}

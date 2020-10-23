@@ -11,7 +11,7 @@ class SoundBox {
     }
 
     display(ctx) {
-        utils.drawRectangle(ctx, this.x, this.y, this.width, this.height, "blue")
+        utils.drawRectangle(ctx, this.x, this.y, this.width, this.height, "blue");
     }
     move() {
         this.x -= this.speed;
@@ -21,7 +21,6 @@ class SoundBox {
     }
 
     destroy() {
-
         console.log("box destroyed")
     }
 
@@ -30,8 +29,6 @@ class SoundBox {
         console.log("box clicked")
 
     }
-
-
 
 }
 
