@@ -118,8 +118,7 @@ function draw(params = {}) {
 		if ((audioData[audioData.length - 3]) >= 80) {
 			if (rectArray.length < 100) {
 				let aBox = new classes.SoundBox(canvasWidth, canvasHeight / 2, 40, 50, 3);
-				//aBox.addEventlistener
-				rectArray.push(aBox)
+				rectArray.push(aBox);
 			}
 		}
 	}
@@ -230,4 +229,4 @@ function drawEffect() {
 
 }
 
-export { setupCanvas, draw, drawEffect };
+export { setupCanvas, draw, drawEffect, rectArray };
