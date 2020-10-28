@@ -8,10 +8,11 @@
 </head>
 <body>
     <video autoplay></video>
-    <main>
-        <canvas width="800" height="400"></canvas>
+    <h1>Hit the Beat!</h1>
+    <main id="canvasWindow">
+        <canvas  width="800" height="400"></canvas>
         <div id="controls">
-            <section>
+            <section id="buttonBox">
                 <button id="playButton" data-playing="no"></button>
                 <button id="fsButton">Full Screen</button>
 
@@ -31,18 +32,22 @@
                 <span id="volumeLabel">???</span>
             </section>
 
-            <section>
+            <section id="visualsBox">
+                <p>Visuals:</p>
                 <span><input type="checkbox" id="gradientCB"><label for="gradientCB">Show Gradient</label></span>
                 <span><input type="checkbox" id="barsCB"><label for="barsCB">Show Bars</label></span>
                 <span><input type="checkbox" id="squaresCB"><label for="squaresCB">Show Squares</label></span>
                 <span><input type="checkbox" id="circlesCB"><label for="circlesCB">Show Circles</label></span>
+            </section>
+
+            <section id="sfxBox">
+                <p>SFX:</p>
                 <span><input type="checkbox" id="noiseCB"><label for="noiseCB">Show Noise</label></span>
                 <span><input type="checkbox" id="invertCB"><label for="invertCB">Show Invert</label></span>
                 <span><input type="checkbox" id="embossCB"><label for="embossCB">Show Emboss</label></span>
                 <span><input type="checkbox" id="highshelfCB"><label for="highshelfCB">Highshelf Filter (Treble)</label></span>
                 <span><input type="checkbox" id="lowshelfCB"><label for="lowshelfCB">Lowshelf Filter (Bass)</label></span>
-                <span><input type="checkbox" id="distortionCB"><label for="distortionCB">Distortion</label></span>
-                <span><input type="range" min="0" max="100" value="0" id="distortionSlider"></span>
+                <span><input type="range" min="0" max="40" value="15" id="lowshelfSlider"><p id="lowshelfVal"></p></span>
             </section>
         </div>
     </main>

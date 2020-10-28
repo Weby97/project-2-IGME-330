@@ -11,7 +11,7 @@ class SoundBox {
     }
 
     display(ctx) {
-        utils.drawRectangle(ctx, this.x, this.y, this.width, this.height, "blue")
+        utils.drawRectangle(ctx, this.x, this.y, this.width, this.height, "blue");
     }
     move() {
         this.x -= this.speed;
@@ -21,20 +21,25 @@ class SoundBox {
     }
 
     destroy() {
-
-        console.log("box destroyed")
+        console.log("box destroyed");
     }
-
-    clicked() {
-
-        console.log("box clicked")
-
-    }
-
-
 
 }
 
+const clicked = (x, y, rectArray) => {
+    let index = 0;
+    let changed = false;
+    for (let rect of rectArray){
+        if(x >= rect.x && y >= rect.y && x < (rect.width + rect.x) && y < (rect.height + rect.y)){
+            index = rectArray.indexOf(rect);
+        }
+    }
+    if (changed){
+        changed = false;
+        rectArray.splice(index,1);
+    }
+}
+
 export {
-    SoundBox
+    SoundBox, clicked
 }
